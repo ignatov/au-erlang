@@ -1,0 +1,592 @@
+<!DOCTYPE HTML>
+<head>
+	<title>Введение в Эрланг</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=792, user-scalable=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<link rel="stylesheet" href="shower/themes/ribbon/styles/screen.css">
+    <!--<link rel="stylesheet" href="default.min.css">-->
+    <link rel="stylesheet" href="styles/idea.css">
+    <script src="highlight.pack.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+    </script>
+</head>
+<body class="list">
+	<header class="caption">
+		<h1>Введение в Эрланг</h1>
+		<p>Сергей Игнатов, JetBrains</p>
+	</header>
+	<section class="slide" id="Cover"><div>
+		<h2>Введение в Эрланг</h2>
+		<p>Сергей Игнатов, <label>JetBrains</label><br/>
+            <a href="mailto:sergey.ignatov@jetbrains.com">sergey.ignatov@jetbrains.com</a>
+        </p>
+		<!--<img src="pictures/cover.jpg" alt="">-->
+		<!--
+			To apply styles to the certain slides
+			set slide ID to get needed elements
+			-->
+		<style>
+			#Cover h2 {
+				margin:30px 0 0;
+				color:#555;
+				text-align:center;
+				font-size:150px;
+            }
+			#Cover p {
+				margin-top:40px;
+				text-align:center;
+                line-height: 1.1;
+				/*color:#333;*/
+				font-size:50px;
+            }
+            #Cover a {
+                font-size:49px;
+                margin-top: -50px;
+            }
+            #Cover label {color:#F60; margin:-10px 0 0;}
+		</style>
+	</div></section>
+    <section class="slide">
+        <div>
+            <h2>Кто, зачем и почему</h2>
+            <ul>
+                <li>С 1986 Эрикссон: телеком</li>
+                <li>Нереляционные базы данных: Mneaia, CouchDB </li>
+                <li>What's up, Фейсбук чат, Яндекс почта, Ejabberd (XMPP сервер) и т.п.</li>
+                <li>Гитхаб для долгоживущих задач, Близзард для сборки дистрибутивов</li>
+                <li>Система управления поездами метро г. Лион, Франция</li>
+            </ul>
+            <a href="http://www.erlang.org/faq/introduction.html">http://www.erlang.org/faq/introduction.html</a>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Да, виртульная машина</h2>
+            <pre><code style="line-height: 26px">
+                  +--------+   +--------+
+                  | Erlang |   | Elixir |
+                  +--------+   +--------+
+                      ||           ||
+                      \/           \/
+                    +-----------------+
+                    | .beam byte code |
+                    +-----------------+
+                            ||
+                            \/
+               +---------------------------+
+               | BEAM emulator (Erlang VM) |
+               +---------------------------+
+        </code>
+        </pre>
+            <p></p>
+        </div>
+    </section>
+    <section class="slide"><div>
+		<h2>Числа</h2>
+        <pre><code class="erlang">1 + 2 * 3.              % 7
+1 * 1.0 * 7.            % 7.0
+1.0e1 - 3.              % 7.0
+2#11 + 3#11.            % 7
+16#AE.                  % 174
+        </code>
+        </pre>
+        <p><code>Основание</code><b>#</b><code>Значение</code> (основание от <code>2</code> до <code>36</code>)</p>
+	</div></section>
+
+    <section class="slide"><div>
+		<h2>Атомы</h2>
+        <pre>
+            <code>ok.</code>
+            <code>{error, badarg}.</code>
+            <code>'CAPS_ATOM'.</code>
+            <code>'with spaces'.</code>
+            <code>'atom' = atom.   <mark class="comment">% true </mark></code>
+        </pre>
+        <p>
+            <code>:symbol</code> из <b>Ruby</b>, <code>'quoted-value</code> из <b>Lisp</b>
+            <br/>
+             Атом — просто уникальное значение
+            <br/>
+            <code>true</code> и <code>false</code> — тоже атомы
+        </p>
+    </div></section>
+
+    <section class="slide"><div>
+		<h2>Кортежи</h2>
+        <pre><code class="erlang-repl">{"String", 200}.
+element(1, {"String", 200}).         % "String"
+setelement(2, {"String", 200}, 250). % {"String",250} </code>
+        </pre>
+        <p>Неизменяемые структуры, всегда возвращается новый экземпляр.</p>
+    </div></section>
+
+
+    <section class="slide"><div>
+        <h2>Списки</h2>
+        <pre><code class="erlang-repl">[1,2,3].
+[1,2,a,"str",3,{}].
+[4 | [1,2,3]].           % [4,1,2,3]
+[1,2,3] ++ [4,5].        % [1,2,3,4,5]
+[1,2,3] -- [1,2] -- [2]. % [2,3]
+hd([4,1,2,3]).           % 4
+tl([4,1,2,3]).           % [1,2,3]
+tl(["last element"]).   % []</code></pre>
+        <p>Символ «<code>|</code>» — это оператор добавления элемента в голову списка
+    </div></section>
+
+    <section class="slide"><div>
+        <h2>List comprehension</h2>
+        <pre><code class="erlang-repl">[2*X || X <- lists:seq(0,10),   X*X > 3].      % [4,6,8,10]
+[X*X || X <- [1,2,3,4,5,6,7],   X > 6].        % [49]
+[X   || X <- [1,2,foo,bar,5,6], X rem 2 == 0]. % [2,6]
+        </code></pre>
+            <!--<p>Удобный способ для манипуляции с данными</p>-->
+    </div></section>
+
+    <section class="slide"><div>
+        <h2>Ломая глаза</h2>
+        <pre><code class="erlang-repl">Color = 16#F09A29.
+Pixel = <&lt;Color:24>>.
+Pixels = <<213,45,132,64,76,32,76,0,0,234,32,15>>.
+<&lt;Pix1:24, Pix2:24, Pix3:24, Pix4:24>> = Pixels.
+<&lt;R:8, G:8, B:8>> = <&lt;Pix1:24>>.
+<&lt;R:8, Rest/binary>> = Pixels.% R=213,Rest = <<45,132,64...>></code></pre>
+<!--<&lt;R:16,Rest2/binary>> =Pixels.<mark class="comment">% R2=54573,Rest= <<132,64,76...>></mark></code></pre>-->
+        <p>
+            Это действительно удобный способ чтения бинарных данных <br/>
+            <b>Важно</b>: необходим пробел между <code>=</code> и <code><<</code>
+        </p>
+    </div></section>
+
+    <section class="slide"><div>
+        <h2>Binary comprehension</h2>
+        <pre>
+            <code class="erlang-repl">Pixels = <<213,45,132,64,76,32,76,0,0,234,32,15>>.
+RGB = [{R,G,B} || <&lt;R:8,G:8,B:8>> <= Pixels].
+RGB = [{213,45,132},{64,76,32},{76,0,0},{234,32,15}].
+[X || &lt;&lt;X&gt;&gt; &lt;= &lt;&lt;1,2,3,4,5&gt;&gt;, X rem 2 == 0]. % [2,4]</code>
+        </pre>
+    </div></section>
+
+    <section class="slide"><div>
+		<h2>Строки</h2>
+        <pre>
+            <code>"Just a string".
+[65,66,67].           % "ABC"
+[97,98,99].           % "abc"
+[97,98,99] == "abc".  % true </code>
+        </pre>
+        <p>
+            Строка — список целых чисел.
+        </p>
+    </div></section>
+    <section class="slide"><div>
+		<h2>Связывание и сопоставление</h2>
+        <pre>
+            <code class="erlang-repl">Res = ok.             % ok
+Primes = [1,2,3,5,7]. % [1,2,3,5,7]
+C = {"A", 20}.        % {"A",20}
+L = [C, {"B", 25}].   % [{"A",20},{"B",25}]</code>
+        </pre>
+        <p>
+          Присваиваний нет. Есть связывание и сопоставление с образцом.
+        </p>
+    </div></section>
+    <section class="slide"><div>
+        <h2>Связывание и сопоставление. Продолжение</h2>
+        <pre>
+            <code>Name = onlyonce.           % onlyonce
+Name = maybetwice.         % <mark class="important">error</mark>
+ok = ok.                   % ok
+ok = notok.                % <mark class="important">error</mark>
+N = 12.                    % 12
+12 = N.                    % 12
+{[], M} = {[], 200}.       % M = 200
+[Head|Tail] = [1,2,3,4].   % Head = 1, Tail = [2,3,4]</code>
+        </pre>
+    </div></section>
+    <section class="slide"><div>
+		<h2>Словари</h2>
+        <pre>
+            <code>M  = #{1 => 1}.
+M2 = M#{1 => 10}.
+#{1 := X} = M2.
+X.                % 10
+#{2 := X3} = M.   % ** exception error:
+                  % no match of right hand side value #{1 => 1}
+            </code>
+        </pre>
+        <p>
+            Опять же, персистентная структура данных.
+        </p>
+    </div></section>
+    <section class="slide"><div>
+        <h2>Сравнение</h2>
+        <pre>
+            <code class="erlang-repl">5 =:= true.           % false
+0 == false.           % false
+"a" > 10.             % true
+1.0 == 1.             % true
+1.0 =:= 1.            % false
+0 > atom.             % false
+sort([atom,[],{},1]). % [1,atom,{},[]]</code>
+        </pre>
+        <p><b>number < atom < reference < fun < port < pid < tuple < list < bit string</b>
+    </div></section>
+
+    <section class="slide">
+        <div>
+            <h2>Модули</h2>
+            <pre><code class="erlang">-module(simple).
+-export([add/2, hello/0]).
+
+add(A, B) -> internal(A, B).
+internal(A, B) -> A + B.
+hello() -> io:format("Hello, world!~n").</code></pre>
+            <p>Имя файла должно совпадать с именем модуля.</p>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Немного грамматики</h2>
+        <pre><code class="erlang">forms ::= (form <mark><b>.</b></mark>)*
+form ::= function | attribute
+function ::= function_clause (<mark><b>;</b></mark> function_clause)*
+function_clause ::= atom <mark><b>(</b></mark> args? <mark><b>)</b></mark> guards? <mark><b>-></b></mark> body
+body ::= expression (<mark><b>,</b></mark> expression)*
+        </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Про функции</h2>
+        <pre><code class="erlang">head([H|_]) -> H.
+second([_, S|_]) -> S.
+
+same(X, X) -> true;
+same(_, _) -> false.
+        </code></pre>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>Ещё про функции</h2>
+        <pre><code class="erlang">right_age(Age) <k>when</k> <v>Age</v> >= <n>16</n>, <v>Age</v> < <n>104</n> -> true;
+right_age(_)                             -> false.
+
+to_string(Arg) <k>when</k> is_atom(Agr)    -> "atom";
+to_string(Arg) <k>when</k> is_list(Agr)    -> "list";
+to_string(Arg) <k>when</k> is_integer(Agr) -> "integer";
+to_string(_)                        -> "unknown".
+        </code>
+            <code>function_clause ::= atom <mark><b>(</b></mark> args? <mark><b>)</b></mark> guards? <mark><b>-></b></mark> body</code>
+        </pre>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>И ещё про функции</h2>
+        <pre><code class="erlang">-module(greet).
+-export([say/2]).
+
+say(Gender, Name) ->
+    io:format("Hello, " ++ title(Gender) ++ ". " ++ Name).
+title(male)   -> "Mr";
+title(female) -> "Mr";
+title(_)      -> "". </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Сопоставление с образцом. Дубль два</h2>
+            <pre><code class="erlang">-module(greet).
+-export([say/2]).
+say(Gender, Name) ->
+    Title = case Gender of
+                male   -> "Mr" ;
+                female -> "Mrs";
+                _      -> ""
+            end,
+    io:format("Hello, " ++ Title ++ ". " ++ Name). </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Условный оператор</h2>
+            <pre><code class="erlang">works_fine()   -> <k>if</k> 1 == 1 -> fine end.
+throws_error() -> <k>if</k> 1 == 2 -> fine end. </code></pre>
+            Всегда должна быть ветка по которой пойдет исполнение:
+            <pre><code>even_or_odd(Num) ->
+    <k>if</k>
+        Num rem 2 == 0 -> even;
+        true           -> odd
+    end.</code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Рекурсия</h2>
+        <pre><code class="erlang">len([])    -> 0;
+len([_|T]) -> 1 + len(T).
+
+reverse([])    -> [];
+reverse([H|T]) -> reverse(T) ++ [H].
+
+map(_, [])            -> [];
+map(Fun, [Head|Tail]) -> [Fun(Head)|map(Fun, Tail)].
+        </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Рекурсия. Теперь с оптимизацией</h2>
+            <pre><code class="erlang">len(L) -> len(L, 0).
+len([], Acc)    -> Acc;
+len([_|T], Acc) -> len(T, Acc + 1).
+
+reverse(L) -> reverse(L, []).
+reverse([], Acc)    -> Acc;
+reverse([H|T], Acc) -> reverse(T, [H|Acc]).
+
+map(Fun, [Head|Tail]) -> <mark><b>...</b></mark>
+            </code></pre>
+            <!--
+map(F, L) -> map(F, L, []).
+map(_, [], Acc)    -> reverse(Acc);
+map(F, [H|T], Acc) -> map(F, T, [F(H)|Acc]).
+            -->
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Функции высших порядков</h2>
+            <pre><code class="erlang-repl">map(_, [])            -> [];
+map(Fun, [Head|Tail]) -> [Fun(Head)|map(Fun, Tail)].
+
+map(<k>fun</k>(X) -> X + 1 <k>end</k>, [1,2,3]).      % [2,3,4]
+map(<k>fun</k>(X) -> X * X <k>end</k>, [1,2,3]).      % [1,4,9]
+            </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Записи</h2>
+            <pre><code>-module(records).
+-export([create_bender/0]).
+-record(robot, {name, occupation=none,
+                hobbies, details=[]}).
+
+create_bender() ->
+    #robot{name="Bender Bending Rodríguez",
+    occupation=industrial, hobbies=["Kill all humans"],
+    details=["Powered by alcohol-based fuels"]}.
+            </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Макросы — это удобно</h2>
+        <pre><code>-define(head, -module(test)).
+?head.
+-define(Arity, 2).
+-define(name, main).
+-export([?name/?Arity]).
+-define(Value, ?Arity).
+-define(add(A, B), A + B).
+-define(title, ?name(X, Y) ->).
+?title ?add(X, Y) + ?Value. </code></pre>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Типизация</h2>
+        <pre><code class="erlang">-spec(add_one(number()) -> number()).
+add_one(X) -> X + 1.
+-spec(atom_add() -> number()).
+atom_add() -> add_one(2).
+-spec(tuple_sum({number(), number()}) -> number()).
+tuple_sum({X, Y}) -> X + Y. </code></pre>
+            <p>
+                <code>Dialyzer</code> проверяет корректность контрактов. <br/>
+                <code>Typer</code> поможет вывести информацию о типах из исходного кода.
+            </p>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>Еще немного о типах</h2>
+        <pre><code class="erlang">-type suit() :: spades | clubs | hearts | diamonds.
+-type value() :: <n>1</n>..10 | j | q | k.
+-type card() :: {suit(), value()}.
+kind({_, A}) <k>when</k> <v>A</v> >= <n>1</n>, <v>A</v> =< <n>10</n> -> number;
+kind(_) -> face.
+main() ->
+    number = kind({spades, 7}),
+    face   = kind({hearts, k}),
+    number = kind({<mark>rubies</mark>, 4}). % <mark class="important">error</mark></code></pre>
+        </div>
+    </section>
+
+    <!--<section class="slide">-->
+        <!--<div>-->
+            <!--<h2>Это непереводимое понятие concurrency</h2>-->
+        <!--</div>-->
+    <!--</section>-->
+    <section class="slide">
+        <div>
+            <h2>Процессы</h2>
+            <ul>
+                <li>Лучшее из двух миров: системных процессов и потоков</li>
+                <li>Очень легкие: сотни байт на процесс</li>
+                <li>Изолированность</li>
+                <li>Собстенный стэк и куча</li>
+                <li>Собственная сборка мусора</li>
+                <li>Очень быстрое переключение контекста</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Модель акторов (1973)</h2>
+            <ul>
+                <li>Асинхронный обмен сообщениями</li>
+                <li>Сообщения передаются не «по ссылке», а «по значению»</li>
+                <li>Сообщения доставляются в порядке отправления</li>
+            </ul>
+            <p>Актор — это и есть процесс, связанный с ним «<code>почтовый ящик</code>» и уникальный идентификатор (<code>pid</code>) </p>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Создание нового процесса</h2>
+        <pre><code class="erlang">Pid = spawn(Node, Module, Function, Args).
+HW = spawn(fun() -> io:format("hello world") end).
+
+G = fun(X) -> timer:sleep(10), io:format("~p~n", [X]) end.
+[spawn(fun() -> G(X) end) || X <- lists:seq(1,10)]. </code></pre>
+
+            <p><code>self()</code> — pid текущего процесса.</p>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Отправка сообщений</h2>
+            <pre><code>Pid <mark>!</mark> Message.
+
+Self = self().
+Self ! ok.
+Self ! {[], 1, atom, "string"}.
+Self ! Self.</code></pre>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>И их получение</h2>
+            <pre><code class="erlang">receive
+    Pattern1 -> ...;
+    Pattern2 -> ...;
+    PatternN -> ...
+after Timeout ->
+    ...
+end.
+            </code></pre>
+        </div>
+    </section>
+    <!--<section class="slide">-->
+        <!--<div>-->
+            <!--<h2>Стандартный жизненный цикл сервера</h2>-->
+            <!--<pre><code class="erlang">start(InitState) -> spawn(?MODULE, loop, [InitState]).-->
+<!--loop(State) ->-->
+    <!--receive-->
+        <!--Pattern1 -> ..., loop(NewState);-->
+        <!--PatternN -> ..., loop(NewState)-->
+    <!--after Timeout ->-->
+        <!--...-->
+    <!--end. </code></pre>-->
+        <!--</div>-->
+    <!--</section>-->
+    <section class="slide">
+        <div>
+            <h2>Слежка</h2>
+            <pre><code class="erlang">F = fun() -> timer:sleep(500), exit(reason) end.
+spawn(F).       <mark class="comment">% Pid</mark>
+link(spawn(F)). <mark class="comment">% ** exception error 'reason'</mark>
+spawn_link(F).
+spawn_link(Node, Module, Fun, Args).
+unlink(Pid).</code></pre>
+            <p>Между процессами не может быть больше одной ссылки. <br/>
+               Цепочки процессов "погибают" до системного. <br/>
+               <code>process_flag(trap_exit, true)</code> сделает вас системным.
+            </p>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div>
+            <h2>Тотальный контроль</h2>
+            <pre><code>1> monitor(process, spawn(<k>fun</k>() -> timer:sleep(500) <k>end</k>)).
+#Ref<0.0.0.77>
+2> flush().
+Shell got {'DOWN',#Ref<0.0.0.77>,process,<0.63.0>,normal}
+
+spawn_monitor(Function).
+spawn_monitor(Module, Function, Args).
+demonitor(Ref). </code></pre>
+            <p>Может создать любое количество мониторов между процессами.</p>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>Обработка ошибок</h2>
+            <pre><code>
+try Expression of
+    SuccessfulPattern1 [Guards] -> ...;
+    SuccessfulPattern2 [Guards] -> ...
+catch
+    Exception:Reason -> ...;
+    Error:What -> ...
+end. </code></pre>
+        </div>
+    </section>
+    <section class="slide">
+        <div>
+            <h2>Ловля ошибок</h2>
+            <pre><code>1> self().
+<0.32.0>
+2> X = 1/0.
+** exception error: bad argument in an arithmetic expression
+3> self().
+<0.35.0>
+4> X = (catch 1/0).
+{'EXIT',{badarith,[{erlang,'/',[1,0],[]}}
+5> self().
+<0.35.0> </code></pre>
+        </div>
+    </section>
+
+
+    <section class="slide"><div>
+        <h2>Что посмотреть</h2>
+        <a href="http://www.erlang.org/">http://www.erlang.org/</a><br/>
+        <a href="http://learnyousomeerlang.com/">http://learnyousomeerlang.com/</a>
+    </div></section>
+
+	<div class="progress"><div></div></div>
+	<script src="shower/shower.min.js"></script>
+</body>
