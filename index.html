@@ -369,7 +369,7 @@ map(F, [H|T], Acc) -> map(F, T, [F(H)|Acc]).
 
     <section class="slide">
         <div>
-            <h2>Функции высших порядков</h2>
+            <h2>Функции высшего порядка</h2>
             <pre><code class="erlang-repl">map(_, [])            -> [];
 map(Fun, [Head|Tail]) -> [Fun(Head)|map(Fun, Tail)].
 
